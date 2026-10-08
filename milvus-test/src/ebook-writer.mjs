@@ -13,7 +13,8 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 const COLLECTION_NAME = "ebook_collection";
 const VECTOR_DIM = 1024;
 const CHUNK_SIZE = 500;
-const EPUB_FILE = "/home/yumumu/Documents/books/计算机图形学基础（第3版）.epub";
+// const EPUB_FILE = "./天龙八部.epub";
+const EPUB_FILE = "/home/yumumu/Documents/books/《穆斯林的葬礼》---霍达.epub";
 
 // 从文件名提取书名（去掉扩展名）
 const BOOK_NAME = parse(EPUB_FILE).name;
@@ -79,7 +80,7 @@ async function ensureCollection(bookId) {
           {
             name: "content",
             data_type: DataType.VarChar,
-            max_length: 1000,
+            max_length: 5000,
           },
           {
             name: "vector",
@@ -122,6 +123,7 @@ async function ensureCollection(bookId) {
  */
 async function insertChunksBatch(chunks, bookId, chapterNum) {
   try {
+    console.log("chunks长度:", chunks.length);
     if (chunks.length === 0) {
       return 0;
     }
@@ -144,10 +146,14 @@ async function insertChunksBatch(chunks, bookId, chapterNum) {
     );
 
     //批量插入到Milvus
+    console.log("要插入数据的长度:", insertData.length);
     const insertResult = await client.insert({
       collection_name: COLLECTION_NAME,
       data: insertData,
     });
+
+    console.log("插入返回结果状态：", insertResult.status);
+
     return Number(insertResult.insert_cnt) || 0;
   } catch (error) {
     console.error(`插入章节${chapterNum}的数据时出错：`, error.message);
