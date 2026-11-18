@@ -19,7 +19,7 @@ const scientistSchema = z.object({
   fields: z.array(z.string()).describe("研究领域列表"),
 });
 
-// 使用 withStructuredOutput 方法
+// 使用 withStructuredOutput 方法，注意
 // const structuredModel = model.withStructuredOutput(scientistSchema);
 const structuredModel = model.withStructuredOutput(scientistSchema, {
   method: "jsonMode",
